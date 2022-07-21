@@ -1,0 +1,9 @@
+﻿  GameLoop.cpp
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(23,18): warning C4309: 'inicializando': truncamiento de valor constante
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(24,18): warning C4309: 'inicializando': truncamiento de valor constante
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(25,22): warning C4309: 'inicializando': truncamiento de valor constante
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(26,22): warning C4309: 'inicializando': truncamiento de valor constante
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(27,20): warning C4309: 'inicializando': truncamiento de valor constante
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(28,20): warning C4309: 'inicializando': truncamiento de valor constante
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(541,6): warning C4101: 'currentY': variable local sin referencia
+  FinalFundamentos.vcxproj -> D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\x64\Debug\FinalFundamentos.exe

@@ -1,0 +1,14 @@
+﻿  GameLoop.cpp
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(25,18): warning C4309: 'inicializando': truncamiento de valor constante
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(26,18): warning C4309: 'inicializando': truncamiento de valor constante
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(27,22): warning C4309: 'inicializando': truncamiento de valor constante
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(28,22): warning C4309: 'inicializando': truncamiento de valor constante
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(29,20): warning C4309: 'inicializando': truncamiento de valor constante
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(30,20): warning C4309: 'inicializando': truncamiento de valor constante
+D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\FinalFundamentos\GameLoop.cpp(445,6): warning C4101: 'currentY': variable local sin referencia
+  Generando código
+  0 of 199 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Generación de código finalizada
+  FinalFundamentos.vcxproj -> D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\x64\Release\FinalFundamentos.exe
