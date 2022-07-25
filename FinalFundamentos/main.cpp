@@ -33,7 +33,7 @@ void Menu()
 		{
 			system("CLS");
 			PointsExplanations(scrnCoord);
-			GameLoop(playerName);
+			Startup(playerName);
 		}
 		else if (ans == 51)
 		{
