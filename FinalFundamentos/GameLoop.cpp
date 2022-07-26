@@ -16,7 +16,7 @@ float _deltaTime;
 
 //Deltatime es el current time en segundos - el tiempo previo en segundos
 
-void Startup(string playerName)
+void Startup()
 {
 	Enemy enemyArray[56];	//Access to all existing enemies
 
@@ -25,7 +25,6 @@ void Startup(string playerName)
 	PlayConfigs playConfig;	//Configurations for current game
 
 	GameStats gameStats;
-	gameStats.playerName = playerName;
 	gameStats.aliensAlive = playConfig.enemyAmountMax;
 
 	HeadsUpDisplay(scrnCoord, gameStats);	//Print HUD
@@ -66,6 +65,10 @@ void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& g
 	while (stillPlaying)	//While player is still playing
 	{
 		currState = WinConditions(playConfig, gameStats, player, enemyArray);	//Determine if game is over
+		if (wantsQuit)
+		{
+			currState = GameStates::Quit;
+		}
 		curT = std::chrono::system_clock::now();
 		dT = curT - preT;
 		_deltaTime = dT.count();
@@ -74,8 +77,6 @@ void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& g
 		{
 			continue;
 		}
-		gotoxy(60, 20);
-		cout << 1.0 / _deltaTime;
 		preT = curT;
 
 
@@ -127,6 +128,7 @@ void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& g
 
 
 			wantsQuit = TakeInput(player, bullet, movementKeys, actionKeys);	//Player's input registration
+			
 		}
 		break;
 
@@ -139,7 +141,7 @@ void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& g
 			stillPlaying = false;	//Player is no longer playing
 			break;
 		case GameStates::Quit:
-
+			wantsQuit = false;
 			stillPlaying = willQuit();
 			break;
 		default:
@@ -152,6 +154,8 @@ void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& g
 bool willQuit()
 {
 	//Cartelito de will quit
+	cout << "WANWNAWNDAWN";
+	system("PAUSE");
 	return true;
 }
 
@@ -162,6 +166,40 @@ void StartPrint(Cover playerCovers[], ScreenCoordinates scrnCoord, PlayConfigs p
 	PrintPlayer(player);	//Print player
 
 	PrintCovers(playerCovers, scrnCoord);
+
+	PrintControls(scrnCoord);
+}
+
+void PrintControls(ScreenCoordinates scrnCoord)
+{
+
+	gotoxy(scrnCoord.ControlsX - 4, scrnCoord.ControlsY);
+	cout << "Move Left:    Move Right:";
+	gotoxy(scrnCoord.ControlsX, scrnCoord.ControlsY+1);
+
+	cout << (char)218 << (char)196 << (char)196 << (char)196 << (char)191 << "       " << (char)218 << (char)196 << (char)196 << (char)196 << (char)191;
+	
+	gotoxy(scrnCoord.ControlsX, scrnCoord.ControlsY+2);
+	cout << (char)179 << ' ' << (char)17 << ' ' << (char)179 << "       " << (char)179 << ' ' << (char)16 << ' ' << (char)179;
+
+	gotoxy(scrnCoord.ControlsX, scrnCoord.ControlsY + 3);
+	cout << (char)192 << (char)196 << (char)196 << (char)196 << (char)217 << "       " << (char)192 << (char)196 << (char)196 << (char)196 << (char)217;
+
+
+	gotoxy(scrnCoord.ControlsX, scrnCoord.ControlsY + 5);
+	cout << "      Shoot:";
+	gotoxy(scrnCoord.ControlsX, scrnCoord.ControlsY + 6);
+	cout << (char)218 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)191;
+	gotoxy(scrnCoord.ControlsX, scrnCoord.ControlsY + 7);
+	cout << (char)179 << ' ' << ' ';
+
+	SetConsoleTextAttribute(hConsole, 255);
+	cout << (char)255 << (char)255 << (char)255 << (char)255 << (char)255 << (char)255 << (char)255 << (char)255 << (char)255 << (char)255 << (char)255;
+	SetConsoleTextAttribute(hConsole, 7);
+
+	cout << ' ' << ' ' << (char)179;
+	gotoxy(scrnCoord.ControlsX, scrnCoord.ControlsY + 8);
+	cout << (char)192 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)196 << (char)217;
 }
 
 //Has game ended
@@ -279,9 +317,6 @@ void ScreenBorder(ScreenCoordinates scrnCoord)
 //Writes player's stats onto the screen
 void StatsWriter(ScreenCoordinates scrnCoord, GameStats gameStats)
 {
-	gotoxy(scrnCoord.nameX, scrnCoord.nameY);
-	cout << gameStats.playerName;
-
 	gotoxy(scrnCoord.lifesX, scrnCoord.lifesY);
 	cout << "Lifes: " << gameStats.lifes;
 

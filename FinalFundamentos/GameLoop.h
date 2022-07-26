@@ -2,10 +2,9 @@
 #include <Windows.h>
 #include <iostream>
 #include <conio.h>
-#include <cstdio>
 #include <chrono>
-#include <thread>
 #include <time.h>
+#pragma comment (lib, "winmm")
 
 using namespace::std;
 
@@ -72,9 +71,6 @@ struct ScreenCoordinates
 	int alienLimitL{ 2 };	//Alien's limits in the screen on the left side
 	int alienLimitR{ 34 };	//Alien's limits in the screen on the right side
 
-	int nameX{ 55 };
-	int nameY{ 5 };
-
 	int lifesX{ 55 };
 	int lifesY{ 8 };
 
@@ -84,6 +80,9 @@ struct ScreenCoordinates
 	int CoverY{ 23 };
 	int CoverStartX{ 7 };
 	int DistanceBtwnCovers{ 7 };
+
+	int ControlsX{ 55 };
+	int ControlsY{ 15 };
 };
 
 struct PlayConfigs
@@ -101,8 +100,6 @@ struct PlayConfigs
 
 struct GameStats
 {
-	string playerName;
-
 	int currIntervalMovement = 0;	//Current count used in movement's interval
 	int currIntervalBulletSpeed = 0;	//Current count used in bulletSpeed's interval
 	int currIntervalPlayerBulletSpeed = 0;	//
@@ -121,9 +118,10 @@ struct GameStats
 
 #pragma region Functions
 void StartPrint(Cover playerCovers[], ScreenCoordinates scrnCoord, PlayConfigs playConfig, Player player, Enemy enemyArray[]);
+void PrintControls(ScreenCoordinates scrnCoord);
 void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& gameStats, Enemy enemyArray[]);
 bool willQuit();
-void Startup(string playerName);
+void Startup();
 GameStates WinConditions(PlayConfigs& playConfig, GameStats& gameStats, Player player, Enemy enemyArray[]);
 void WinScreen();
 void LoseScreen();

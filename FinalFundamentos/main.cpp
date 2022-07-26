@@ -13,27 +13,50 @@ int main()
 
 void Menu()
 {
-	SetFontSize();
+	
 
 	char ans;
 	string playerName;
 	bool stillRunning = true;
 	ScreenCoordinates scrnCoord;
 
-	cout << "Type your name" << endl;
-	cin >> playerName;
-	
-
 	while (stillRunning)
 	{
 		system("CLS");
-		cout << "1: Play \n2: Stats \n3: Quit" << endl;
+		cout << R"(
+
+
+______                                  _     _         _                                   _                        
+|  _  \                                | |   (_)       | |                                 | |                       
+| | | | ___  ___   ___  ___  _ __    __| |    _  _ __  | |_  ___      _ __ ___    __ _   __| | _ __    ___  ___  ___ 
+| | | |/ _ \/ __| / __|/ _ \| '_ \  / _` |   | || '_ \ | __|/ _ \    | '_ ` _ \  / _` | / _` || '_ \  / _ \/ __|/ __|
+| |/ /|  __/\__ \| (__|  __/| | | || (_| |   | || | | || |_| (_) |   | | | | | || (_| || (_| || | | ||  __/\__ \\__ \
+|___/  \___||___/ \___|\___||_| |_| \__,_|   |_||_| |_| \__|\___/    |_| |_| |_| \__,_| \__,_||_| |_| \___||___/|___/                                                                                                                                                                         
+            
+              __      _____   _                           ___        _____  _          _         
+             /_ | _  |  __ \ | |                         |__ \  _   / ____|| |        | |        
+              | |(_) | |__) || |  __ _  _   _               ) |(_) | (___  | |_  __ _ | |_  ___  
+              | |    |  ___/ | | / _` || | | |             / /      \___ \ | __|/ _` || __|/ __| 
+              | | _  | |     | || (_| || |_| |            / /_  _   ____) || |_| (_| || |_ \__ \ 
+              |_|(_) |_|     |_| \__,_| \__, |           |____|(_) |_____/  \__|\__,_| \__||___/ 
+                                         __/ |  
+                                        |___/                                           
+                                
+            
+                                     _____      _____         _  _   
+                                    |____ | _  |  _  |       (_)| |  
+                                        / /(_) | | | | _   _  _ | |_ 
+                                        \ \    | | | || | | || || __|
+                                    .___/ / _  \ \/' /| |_| || || |_ 
+                                    \____/ (_)  \_/\_\ \__,_||_| \__|
+)" << endl;
 		ans = _getch();
 		if (ans == 49)
 		{
+			SetFontSize();
 			system("CLS");
 			PointsExplanations(scrnCoord);
-			Startup(playerName);
+			Startup();
 		}
 		else if (ans == 51)
 		{
@@ -78,17 +101,28 @@ void PointsExplanations(ScreenCoordinates scrnCoord)
 		cout << '\n';
 	}
 	
-	
+	gotoxy(5, 5);
+	cout << "SPACE INVADERS EDITION" << endl;
 
 	gotoxy(10, 10);
-	wcout << (char)6 << " = 30 POINTS" << endl;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
+	wcout << (char)6;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); 
+	cout << " = 30 POINTS" << endl;
 	gotoxy(10, 11);
-	cout << (char)4 << " = 20 POINTS" << endl;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+	cout << (char)4;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); 
+	cout << " = 20 POINTS" << endl;
 	gotoxy(10, 12);
-	cout << (char)190 << " = 10 POINTS" << endl;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 13);
+	cout << (char)190;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); 
+	cout << " = 10 POINTS" << endl;
 	char ans = _getch();
 
-
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+	
 	gotoxy(0, 0);
 
 	for (int j = 0; j < scrnCoord.screenSizeY; j++)
