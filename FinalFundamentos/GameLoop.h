@@ -13,9 +13,10 @@ using namespace::std;
 #pragma region Enums & Structs
 
 enum class MovementKeys { Right = 77, Left = 75};
-enum class ActionKeys { Shoot = ' ', Pause = 'p', PauseAlt = 'P' };
-enum class GameStates { StillPlaying, Lost, Won };
+enum class ActionKeys { Shoot = ' ', Quit = 'q', QuitAlt = 'Q' };
+enum class GameStates { StillPlaying, Lost, Won, Quit};
 enum class EnemyTypes { SpaceShip = 100, UpperAlien = 30, MiddleAlien = 20, LowerAlien = 10 };
+enum class TypeOfCollision{NoCollision,CollisionPlayer, CollisionBullet, CollisionEnemy, CollisionCover};
 
 struct Player
 {
@@ -52,6 +53,7 @@ struct Wall
 	int life{ 2 };
 	char fullLife{ (char)219 };
 	char halfLife{ (char)177 };
+	bool lastHit{ false };
 };
 
 struct Cover
@@ -66,6 +68,9 @@ struct ScreenCoordinates
 	int ScreenStartX{ 3 };	//Enemies start
 	int screenSizeX{ 35 }; //70
 	int screenSizeY{ 29 };
+
+	int alienLimitL{ 2 };	//Alien's limits in the screen on the left side
+	int alienLimitR{ 34 };	//Alien's limits in the screen on the right side
 
 	int nameX{ 55 };
 	int nameY{ 5 };
@@ -83,23 +88,24 @@ struct ScreenCoordinates
 
 struct PlayConfigs
 {
-	string playerName;
-
 	const int enemyAmountMax = 55;	//Amount of starting enemies
 	const int differenceBtwn = 2;	//Space between each enemy
 
-	int alienLimitL{ 2 };	//Alien's limits in the screen on the left side
-	int alienLimitR{ 34 };	//Alien's limits in the screen on the right side
+	int intervalChangeInMov{ 8 };	//How often does the "intervalMovement" change
+	int IntervalPlayerBulletSpeed = 2;
 
-	int intervalChangeInMov{ 5 };	//How often does the "intervalMovement" change
-
-	int gameSpeed{ 20 };	//How fast does the game run (in milliseconds)
+	int gameSpeed{ 60 };	//How fast does the game run (in milliseconds) 1/gameSpeed
 	int intervalMovement{ 60 };	//How often do the aliens move
 	int intervalBulletSpeed{ 5 };	//How often does the bullets move
 };
 
 struct GameStats
 {
+	string playerName;
+
+	int currIntervalMovement = 0;	//Current count used in movement's interval
+	int currIntervalBulletSpeed = 0;	//Current count used in bulletSpeed's interval
+	int currIntervalPlayerBulletSpeed = 0;	//
 	int currIntervalChangeInMov = 0;	//Current progress in the interval
 
 	int spaceShipCount = 0;
@@ -114,30 +120,38 @@ struct GameStats
 
 
 #pragma region Functions
-void StartPrint(Cover playerCovers[], ScreenCoordinates scrnCoord, PlayConfigs playConfig);
-void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& gameStats);
+void StartPrint(Cover playerCovers[], ScreenCoordinates scrnCoord, PlayConfigs playConfig, Player player, Enemy enemyArray[]);
+void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& gameStats, Enemy enemyArray[]);
+bool willQuit();
 void Startup(string playerName);
-GameStates WinConditions(PlayConfigs& playConfig, GameStats& gameStats);
+GameStates WinConditions(PlayConfigs& playConfig, GameStats& gameStats, Player player, Enemy enemyArray[]);
 void WinScreen();
 void LoseScreen();
-void HeadsUpDisplay(PlayConfigs playConfig, ScreenCoordinates scrnCoord, GameStats gameStats);
-void StatsWriter(PlayConfigs playConfig, ScreenCoordinates scrnCoord, GameStats gameStats);
+void HeadsUpDisplay(ScreenCoordinates scrnCoord, GameStats gameStats);
+void StatsWriter(ScreenCoordinates scrnCoord, GameStats gameStats);
 void ScreenBorder(ScreenCoordinates scrnCoord);
-void CreateAliens(ScreenCoordinates scrnCoord, PlayConfigs playConfig);
-void BulletWork(Bullet& bullet, Bullet& alienBullet, Cover playerCovers[], COORD origin, ScreenCoordinates scrnCoord, PlayConfigs& playConfig, GameStats& gameStats);
+void CreateAliens(ScreenCoordinates scrnCoord, PlayConfigs playConfig, Enemy enemyArray[]);
+
+
+void CollisionManager(TypeOfCollision collisionResult, Bullet& bullet, Bullet& alienBullet, Cover playerCovers[], COORD origin, ScreenCoordinates scrnCoord, PlayConfigs& playConfig, GameStats& gameStats, Player& player, Enemy enemyArray[]);
+void BulletWork(Bullet& bullet, Bullet& alienBullet, Cover playerCovers[], COORD origin, ScreenCoordinates scrnCoord, PlayConfigs& playConfig, GameStats& gameStats, Player& player, Enemy enemyArray[]);
 void BulletWithBulletColl(Bullet& bullet, Bullet& alienBullet);
-void HitAlien(Bullet& bullet, PlayConfigs& playConfig, GameStats& gameStats, ScreenCoordinates scrnCoord, int index, bool& hit);
-void MoveAliens(PlayConfigs playConfig, GameStats& gameStats);
-void trySpawnSpaceShip(PlayConfigs playConfig, GameStats& gameStats);
-void SpawnSpaceShip(PlayConfigs playConfig, GameStats& gameStats);
-Enemy AliensAttack(Bullet& alienBullet, PlayConfigs playConfig);
-void TakeInput(Player& player, Bullet& bullet, int movementKeys[], char actionKeys[]);
+void HitAlien(Bullet& bullet, PlayConfigs& playConfig, GameStats& gameStats, ScreenCoordinates scrnCoord, Enemy& enemyHit);
+void CollisionPlayer(Bullet& bullet, GameStats& gameStats, ScreenCoordinates scrnCoord);
+
+
+void MoveAliens(PlayConfigs playConfig, GameStats& gameStats, ScreenCoordinates scrnCoord, Enemy enemyArray[]);
+bool trySpawnSpaceShip(GameStats& gameStats, PlayConfigs playConfig);
+void SpawnSpaceShip(PlayConfigs playConfig, GameStats& gameStats, Enemy enemyArray[]);
+void MoveSpaceShip(Enemy& spaceShip, ScreenCoordinates scrnCoord);
+Enemy AliensAttack(Bullet& alienBullet, PlayConfigs playConfig, Enemy enemyArray[]);
+bool TakeInput(Player& player, Bullet& bullet, int movementKeys[], char actionKeys[]);
 
 void PrintBullet(Bullet bullet, COORD origin);
 void PrintPlayer(Player player);
-void PrintAliens(PlayConfigs playConfig);
+void PrintAliens(PlayConfigs playConfig, Enemy enemyArray[]);
 void PrintCovers(Cover playerCovers[], ScreenCoordinates scrnCoord);
-void PlayerHitEffect(ScreenCoordinates scrnCoord, Cover playerCovers[], PlayConfigs playConfig, GameStats gameStats);
+void PlayerHitEffect(ScreenCoordinates scrnCoord, PlayConfigs playConfig, GameStats gameStats);
 void gotoxy(int x, int y);
 #pragma endregion
 

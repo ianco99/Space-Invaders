@@ -22,7 +22,7 @@ void Menu()
 
 	cout << "Type your name" << endl;
 	cin >> playerName;
-
+	
 
 	while (stillRunning)
 	{
