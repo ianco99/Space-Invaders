@@ -1,9 +1,0 @@
-﻿  GameLoop.cpp
-D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\SpaceInvaders\FinalFundamentos\GameLoop.cpp(235,19): warning C4309: 'inicializando': truncamiento de valor constante
-D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\SpaceInvaders\FinalFundamentos\GameLoop.cpp(236,19): warning C4309: 'inicializando': truncamiento de valor constante
-D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\SpaceInvaders\FinalFundamentos\GameLoop.cpp(237,23): warning C4309: 'inicializando': truncamiento de valor constante
-D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\SpaceInvaders\FinalFundamentos\GameLoop.cpp(238,23): warning C4309: 'inicializando': truncamiento de valor constante
-D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\SpaceInvaders\FinalFundamentos\GameLoop.cpp(239,21): warning C4309: 'inicializando': truncamiento de valor constante
-D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\SpaceInvaders\FinalFundamentos\GameLoop.cpp(240,21): warning C4309: 'inicializando': truncamiento de valor constante
-D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\SpaceInvaders\FinalFundamentos\GameLoop.cpp(576,6): warning C4101: 'currentY': variable local sin referencia
-  FinalFundamentos.vcxproj -> D:\Users\ianco\Desktop\Image\2022\Fundamentos\FinalFundamentos\SpaceInvaders\x64\Debug\FinalFundamentos.exe
