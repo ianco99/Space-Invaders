@@ -14,7 +14,7 @@ using namespace::std;
 enum class MovementKeys { Right = 77, Left = 75};
 enum class ActionKeys { Shoot = ' ', Quit = 'q', QuitAlt = 'Q' };
 enum class GameStates { StillPlaying, Lost, Won, Quit};
-enum class EnemyTypes { SpaceShip = 100, UpperAlien = 30, MiddleAlien = 20, LowerAlien = 10 };
+enum class EnemyTypes { SpaceShip = 203, UpperAlien = 30, MiddleAlien = 20, LowerAlien = 10 };
 enum class TypeOfCollision{NoCollision,CollisionPlayer, CollisionBullet, CollisionEnemy, CollisionCover};
 
 struct Player
@@ -100,14 +100,16 @@ struct PlayConfigs
 
 struct GameStats
 {
+	string playerName{"IAN"};
+
 	int currIntervalMovement = 0;	//Current count used in movement's interval
 	int currIntervalBulletSpeed = 0;	//Current count used in bulletSpeed's interval
 	int currIntervalPlayerBulletSpeed = 0;	//
 	int currIntervalChangeInMov = 0;	//Current progress in the interval
 
-	int spaceShipCount = 0;
-
 	int playerScore{ 0 };
+	int lastHighScore{ 1000 };
+	int timesPlayed{ 0 };
 	int lifes{ 3 };
 	int aliensAlive;	//How many aliens are alive
 
@@ -121,7 +123,7 @@ void StartPrint(Cover playerCovers[], ScreenCoordinates scrnCoord, PlayConfigs p
 void PrintControls(ScreenCoordinates scrnCoord);
 void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& gameStats, Enemy enemyArray[]);
 bool willQuit();
-void Startup();
+void Startup(GameStats& gameStats);
 GameStates WinConditions(PlayConfigs& playConfig, GameStats& gameStats, Player player, Enemy enemyArray[]);
 void WinScreen();
 void LoseScreen();
@@ -129,14 +131,11 @@ void HeadsUpDisplay(ScreenCoordinates scrnCoord, GameStats gameStats);
 void StatsWriter(ScreenCoordinates scrnCoord, GameStats gameStats);
 void ScreenBorder(ScreenCoordinates scrnCoord);
 void CreateAliens(ScreenCoordinates scrnCoord, PlayConfigs playConfig, Enemy enemyArray[]);
+void CheckScore(GameStats& gameStats);
 
-
-void CollisionManager(TypeOfCollision collisionResult, Bullet& bullet, Bullet& alienBullet, Cover playerCovers[], COORD origin, ScreenCoordinates scrnCoord, PlayConfigs& playConfig, GameStats& gameStats, Player& player, Enemy enemyArray[]);
 void BulletWork(Bullet& bullet, Bullet& alienBullet, Cover playerCovers[], COORD origin, ScreenCoordinates scrnCoord, PlayConfigs& playConfig, GameStats& gameStats, Player& player, Enemy enemyArray[]);
 void BulletWithBulletColl(Bullet& bullet, Bullet& alienBullet);
 void HitAlien(Bullet& bullet, PlayConfigs& playConfig, GameStats& gameStats, ScreenCoordinates scrnCoord, Enemy& enemyHit);
-void CollisionPlayer(Bullet& bullet, GameStats& gameStats, ScreenCoordinates scrnCoord);
-
 
 void MoveAliens(PlayConfigs playConfig, GameStats& gameStats, ScreenCoordinates scrnCoord, Enemy enemyArray[]);
 bool trySpawnSpaceShip(GameStats& gameStats, PlayConfigs playConfig);

@@ -16,7 +16,7 @@ float _deltaTime;
 
 //Deltatime es el current time en segundos - el tiempo previo en segundos
 
-void Startup()
+void Startup(GameStats& gameStats)
 {
 	Enemy enemyArray[56];	//Access to all existing enemies
 
@@ -24,8 +24,9 @@ void Startup()
 
 	PlayConfigs playConfig;	//Configurations for current game
 
-	GameStats gameStats;
 	gameStats.aliensAlive = playConfig.enemyAmountMax;
+	gameStats.lifes = 3;
+	gameStats.playerScore = 0;
 
 	HeadsUpDisplay(scrnCoord, gameStats);	//Print HUD
 
@@ -37,7 +38,7 @@ void Startup()
 void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& gameStats, Enemy enemyArray[])
 {
 	Enemy desiredAlien;	//Alien that shoots a bullet
-	Enemy spaceShip{ 0,0,(char)100,1,false,EnemyTypes::SpaceShip,true };
+	Enemy spaceShip{ 0,0,(char)203,1,false,EnemyTypes::SpaceShip,true };
 
 	const int actionArrayLength = 3;	//Number of 'actions' player can do
 	const int movementArrayLength = 2;	//Player's movement commands ammount
@@ -105,7 +106,7 @@ void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& g
 
 				MoveAliens(playConfig, gameStats, scrnCoord, enemyArray);	//Move aliens
 
-				if (!enemyArray[playConfig.enemyAmountMax].alive && gameStats.spaceShipCount < 2)
+				if (!enemyArray[playConfig.enemyAmountMax].alive)
 				{
 					if (trySpawnSpaceShip(gameStats, playConfig))
 					{
@@ -128,7 +129,7 @@ void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& g
 
 
 			wantsQuit = TakeInput(player, bullet, movementKeys, actionKeys);	//Player's input registration
-			
+
 		}
 		break;
 
@@ -137,12 +138,13 @@ void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& g
 			stillPlaying = false;	//Player is no longer playing
 			break;
 		case GameStates::Won:	//Player has won
+			CheckScore(gameStats);
 			WinScreen();	//Go to win screen
 			stillPlaying = false;	//Player is no longer playing
 			break;
 		case GameStates::Quit:
-			wantsQuit = false;
-			stillPlaying = willQuit();
+			system("CLS");
+			stillPlaying = false;
 			break;
 		default:
 			break;
@@ -153,10 +155,60 @@ void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& g
 
 bool willQuit()
 {
+	int currentRow = 4;
+
 	//Cartelito de will quit
-	cout << "WANWNAWNDAWN";
-	system("PAUSE");
-	return true;
+	SetConsoleTextAttribute(hConsole, 96);
+	for (int i = 0; i < 8; i++)
+	{
+		gotoxy(4, currentRow);
+		for (int j = 0; j < 29; j++)
+		{
+			cout << (char)255;
+		}
+		currentRow++;
+	}
+
+	currentRow = 5;
+	gotoxy(16, currentRow);
+	cout << (char)218;
+	for (int i = 0; i < 3; i++)
+	{
+		cout << (char)196;
+	}
+	cout << (char)191;
+	currentRow++;
+	gotoxy(16, currentRow);
+	cout << (char)179 << ' ' << '!' << ' ' << (char)179;
+	currentRow++;
+	gotoxy(16, currentRow);
+	cout << (char)192;
+	for (int i = 0; i < 3; i++)
+	{
+		cout << (char)196;
+	}
+	cout << (char)217;
+
+
+	currentRow++;
+	gotoxy(7, currentRow);
+	cout << "Are you sure you want";
+	currentRow++;
+	gotoxy(10, currentRow);
+	cout << "to quit to menu ?";
+	SetConsoleTextAttribute(hConsole, 7);
+	char ans = _getch();
+	if (ans == 'q')
+	{
+		system("CLS");
+		return false;
+	}
+	else
+	{
+		system("CLS");
+		//print
+		return true;
+	}
 }
 
 void StartPrint(Cover playerCovers[], ScreenCoordinates scrnCoord, PlayConfigs playConfig, Player player, Enemy enemyArray[])
@@ -175,11 +227,11 @@ void PrintControls(ScreenCoordinates scrnCoord)
 
 	gotoxy(scrnCoord.ControlsX - 4, scrnCoord.ControlsY);
 	cout << "Move Left:    Move Right:";
-	gotoxy(scrnCoord.ControlsX, scrnCoord.ControlsY+1);
+	gotoxy(scrnCoord.ControlsX, scrnCoord.ControlsY + 1);
 
 	cout << (char)218 << (char)196 << (char)196 << (char)196 << (char)191 << "       " << (char)218 << (char)196 << (char)196 << (char)196 << (char)191;
-	
-	gotoxy(scrnCoord.ControlsX, scrnCoord.ControlsY+2);
+
+	gotoxy(scrnCoord.ControlsX, scrnCoord.ControlsY + 2);
 	cout << (char)179 << ' ' << (char)17 << ' ' << (char)179 << "       " << (char)179 << ' ' << (char)16 << ' ' << (char)179;
 
 	gotoxy(scrnCoord.ControlsX, scrnCoord.ControlsY + 3);
@@ -221,9 +273,9 @@ GameStates WinConditions(PlayConfigs& playConfig, GameStats& gameStats, Player p
 	{
 		return GameStates::Won;
 	}
-	else if (gameStats.aliensAlive == 5)
+	else if (gameStats.aliensAlive == 10)
 	{
-		playConfig.intervalMovement = 10;
+		playConfig.intervalMovement = 22;
 		playConfig.intervalChangeInMov = 2;
 		return GameStates::StillPlaying;
 	}
@@ -252,20 +304,108 @@ GameStates WinConditions(PlayConfigs& playConfig, GameStats& gameStats, Player p
 	}
 }
 
+void CheckScore(GameStats& gameStats)
+{
+	string newName;
+	char ans;
+	bool validInput = false;
+
+	if (gameStats.playerScore > gameStats.lastHighScore)
+	{
+		system("CLS");
+		while (!validInput)
+		{
+			
+			gotoxy(15, 10);
+			cout << "CONGRATULATIONS, YOU GOT A NEW HIGHSCORE";
+			gotoxy(18, 11);
+			cout << "PLEASE INSERT YOUR NAME";
+			gotoxy(20, 12);
+			cin >> newName;
+			if (newName.size() < 16)
+			{
+				validInput = true;
+			}
+			else
+			{
+				gotoxy(20, 12);
+				for (int i = 0; i < newName.size(); i++)
+				{
+					cout << ' ';
+				}
+				gotoxy(20, 13);
+				cout << "Name is too long, please keep it under 16 characters";
+			}
+		}
+		
+
+		gameStats.lastHighScore = gameStats.playerScore;
+		gameStats.playerName = newName;
+	}
+}
+
 //Prints win screen
 void WinScreen()
 {
+	bool validInput = false;
 	system("CLS");
-	cout << "YOU WON" << endl;
-	char ans = _getch();
+	cout << R"(
+
+ __     ______  _    _  __          ______  _   _ _ 
+ \ \   / / __ \| |  | | \ \        / / __ \| \ | | |
+  \ \_/ / |  | | |  | |  \ \  /\  / / |  | |  \| | |
+   \   /| |  | | |  | |   \ \/  \/ /| |  | | . ` | |
+    | | | |__| | |__| |    \  /\  / | |__| | |\  |_|
+    |_|  \____/ \____/      \/  \/   \____/|_| \_(_)
+                                                    
+                                                    
+                                                    
+                                                    
+		Press spacebar to continue
+)" << endl;
+	char ans;
+	while (!validInput)
+	{
+		ans = _getch();
+
+		if (ans == ' ')
+		{
+			validInput = true;
+		}
+	}
+	system("CLS");
 }
 
 //Prints lose screen
 void LoseScreen()
 {
+	bool validInput = false;
 	system("CLS");
-	cout << "YOU LOST" << endl;
-	char ans = _getch();
+	cout << R"(
+
+ __     ______  _    _   _      ____   _____ _______ 
+ \ \   / / __ \| |  | | | |    / __ \ / ____|__   __|
+  \ \_/ / |  | | |  | | | |   | |  | | (___    | |   
+   \   /| |  | | |  | | | |   | |  | |\___ \   | |   
+    | | | |__| | |__| | | |___| |__| |____) |  | |   
+    |_|  \____/ \____/  |______\____/|_____/   |_|   
+                                                                                                      
+                                                    
+                                                    
+                                                    
+		Press spacebar to continue
+)" << endl;
+	char ans;
+	while (!validInput)
+	{
+		ans = _getch();
+
+		if (ans == ' ')
+		{
+			validInput = true;
+		}
+	}
+	system("CLS");
 }
 
 //Prints UI
@@ -438,25 +578,75 @@ void BulletWork(Bullet& bullet, Bullet& alienBullet, Cover playerCovers[], COORD
 			{
 				for (int i = 0; i <= playConfig.enemyAmountMax; i++)	//Check if bullet has hit an alien
 				{
-					if (enemyArray[i].x == bullet.x && enemyArray[i].y == bullet.y && enemyArray[i].alive)
+					if (i == playConfig.enemyAmountMax)
 					{
-						hit = true;
-						HitAlien(bullet, playConfig, gameStats, scrnCoord, enemyArray[i]);
-						if (i != playConfig.enemyAmountMax)
+						if (enemyArray[i].x == bullet.x && enemyArray[i].y == bullet.y + 1 && enemyArray[i].alive)
 						{
-							gameStats.aliensAlive--;
+							enemyArray[i].movingRight = true;
+							hit = true;
+							HitAlien(bullet, playConfig, gameStats, scrnCoord, enemyArray[i]);
+							if (i != playConfig.enemyAmountMax)
+							{
+								gameStats.aliensAlive--;
+							}
+							break;
 						}
-						break;
+						else if (enemyArray[i].x == bullet.x - 1 && enemyArray[i].y == bullet.y && enemyArray[i].alive)
+						{
+							enemyArray[i].movingRight = true;
+							hit = true;
+							HitAlien(bullet, playConfig, gameStats, scrnCoord, enemyArray[i]);
+							if (i != playConfig.enemyAmountMax)
+							{
+								gameStats.aliensAlive--;
+							}
+							break;
+						}
+						else if (enemyArray[i].x == bullet.x + 1 && enemyArray[i].y == bullet.y && enemyArray[i].alive)
+						{
+							enemyArray[i].movingRight = true;
+							hit = true;
+							HitAlien(bullet, playConfig, gameStats, scrnCoord, enemyArray[i]);
+							if (i != playConfig.enemyAmountMax)
+							{
+								gameStats.aliensAlive--;
+							}
+							break;
+						}
+						else if (enemyArray[i].x == bullet.x && enemyArray[i].y == bullet.y && enemyArray[i].alive)
+						{
+							enemyArray[i].movingRight = true;
+							hit = true;
+							HitAlien(bullet, playConfig, gameStats, scrnCoord, enemyArray[i]);
+							if (i != playConfig.enemyAmountMax)
+							{
+								gameStats.aliensAlive--;
+							}
+							break;
+						}
 					}
-					else if (enemyArray[i].x == bullet.x && enemyArray[i].y == bullet.y + 1 && enemyArray[i].alive)
+					else
 					{
-						hit = true;
-						HitAlien(bullet, playConfig, gameStats, scrnCoord, enemyArray[i]);
-						if (i != playConfig.enemyAmountMax)
+						if (enemyArray[i].x == bullet.x && enemyArray[i].y == bullet.y && enemyArray[i].alive)
 						{
-							gameStats.aliensAlive--;
+							hit = true;
+							HitAlien(bullet, playConfig, gameStats, scrnCoord, enemyArray[i]);
+							if (i != playConfig.enemyAmountMax)
+							{
+								gameStats.aliensAlive--;
+							}
+							break;
 						}
-						break;
+						else if (enemyArray[i].x == bullet.x && enemyArray[i].y == bullet.y + 1 && enemyArray[i].alive)
+						{
+							hit = true;
+							HitAlien(bullet, playConfig, gameStats, scrnCoord, enemyArray[i]);
+							if (i != playConfig.enemyAmountMax)
+							{
+								gameStats.aliensAlive--;
+							}
+							break;
+						}
 					}
 				}
 			}
@@ -491,7 +681,7 @@ void BulletWork(Bullet& bullet, Bullet& alienBullet, Cover playerCovers[], COORD
 				break;
 			}
 			for (int j = 0; j < 4; j++)
-			{
+			{					//BULLET WITH COVER
 				if (playerCovers[i].walls[j].x == bullet.x && playerCovers[i].walls[j].y == bullet.y && playerCovers[i].walls[j].life > 0)
 				{
 					playerCovers[i].walls[j].life--;
@@ -601,7 +791,7 @@ void HitAlien(Bullet& bullet, PlayConfigs& playConfig, GameStats& gameStats, Scr
 
 	gameStats.currIntervalChangeInMov++;
 
-	if (gameStats.currIntervalChangeInMov == playConfig.intervalChangeInMov)
+	if (gameStats.currIntervalChangeInMov >= playConfig.intervalChangeInMov)
 	{
 		playConfig.intervalMovement -= 4;
 		gameStats.currIntervalChangeInMov = 0;
@@ -685,7 +875,6 @@ bool trySpawnSpaceShip(GameStats& gameStats, PlayConfigs playConfig)
 
 void SpawnSpaceShip(PlayConfigs playConfig, GameStats& gameStats, Enemy enemyArray[])
 {
-	gameStats.spaceShipCount++;
 
 	ScreenCoordinates scrnCoord;
 
@@ -717,6 +906,7 @@ void MoveSpaceShip(Enemy& spaceShip, ScreenCoordinates scrnCoord)
 			if (spaceShip.x == scrnCoord.alienLimitR)
 			{
 				spaceShip.movingRight = false;
+				spaceShip.alive = false;
 			}
 			else
 			{
@@ -734,6 +924,7 @@ void MoveSpaceShip(Enemy& spaceShip, ScreenCoordinates scrnCoord)
 			if (spaceShip.x == scrnCoord.alienLimitL)
 			{
 				spaceShip.movingRight = true;
+				spaceShip.alive = false;
 			}
 			else
 			{
@@ -919,7 +1110,7 @@ bool TakeInput(Player& player, Bullet& bullet, int movementKeys[], char actionKe
 		}
 
 	}
-		return false;
+	return false;
 }
 
 //Print bullet on the screen
@@ -1010,17 +1201,30 @@ void PrintCovers(Cover playerCovers[], ScreenCoordinates scrnCoord)
 		int currentWall = 0;
 		for (int i = currentX - 1; i <= currentX + 1; i++)
 		{
-
+			
 			gotoxy(i, scrnCoord.CoverY);
-
-			cout << (char)219;
+			if (playerCovers[j].walls[currentWall].life == 2)
+			{
+				cout << (char)219;
+			}
+			else if (playerCovers[j].walls[i].life == 1)
+			{
+				cout << (char)177;
+			}
 
 			playerCovers[j].walls[currentWall].x = i;
 			playerCovers[j].walls[currentWall].y = scrnCoord.CoverY;
 			currentWall++;
 		}
 		gotoxy(currentX, scrnCoord.CoverY - 1);
-		cout << (char)220;
+		if (playerCovers[j].walls[currentWall].life == 2)
+		{
+			cout << (char)220;
+		}
+		else if (playerCovers[j].walls[currentWall].life == 1)
+		{
+			cout << (char)242;
+		}
 		playerCovers[j].walls[currentWall].x = currentX;
 		playerCovers[j].walls[currentWall].y = scrnCoord.CoverY - 1;
 		currentX += scrnCoord.DistanceBtwnCovers;
