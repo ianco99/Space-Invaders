@@ -39,6 +39,7 @@ struct Enemy
 	int y{ 0 };
 	char icon{ 'x' };
 	int lifes{ 1 };
+	bool exploded{ false };
 	bool alive{ true };
 	EnemyTypes alienType{ EnemyTypes::LowerAlien };
 	bool movingRight = true;
@@ -133,6 +134,7 @@ void ScreenBorder(ScreenCoordinates scrnCoord);
 void CreateAliens(ScreenCoordinates scrnCoord, PlayConfigs playConfig, Enemy enemyArray[]);
 void CheckScore(GameStats& gameStats);
 
+void CheckParticles(PlayConfigs playConfig, Enemy enemyArray[]);
 void BulletWork(Bullet& bullet, Bullet& alienBullet, Cover playerCovers[], COORD origin, ScreenCoordinates scrnCoord, PlayConfigs& playConfig, GameStats& gameStats, Player& player, Enemy enemyArray[]);
 void BulletWithBulletColl(Bullet& bullet, Bullet& alienBullet);
 void HitAlien(Bullet& bullet, PlayConfigs& playConfig, GameStats& gameStats, ScreenCoordinates scrnCoord, Enemy& enemyHit);

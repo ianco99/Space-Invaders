@@ -117,7 +117,7 @@ bool MenuInput(int& currentOption)
 	}
 	return false;
 }
-//41 7
+
 void StatsMenu(GameStats gameStats)
 {
 	int currentY = 5;
@@ -375,6 +375,21 @@ void PointsExplanations(ScreenCoordinates scrnCoord)
 	cout << (char)190;
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); 
 	cout << " = 10 POINTS" << endl;
+	gotoxy(5, 17);
+	cout << "Arrow Keys to move cannon";
+	gotoxy(6, 18);
+	cout << "Bullets destroy aliens";
+	gotoxy(4, 19);
+	cout << "Aliens will descend with time";
+	gotoxy(6, 20);
+	cout << "Kill all aliens to win";
+	gotoxy(5, 21);
+	cout << "Once shot you lose a life";
+	gotoxy(7, 22);
+	cout << "0 lifes is game over";
+	gotoxy(7, 24);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+	cout << "Spacebar to continue";
 	char ans = _getch();
 
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);

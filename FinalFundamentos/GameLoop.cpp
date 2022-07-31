@@ -38,7 +38,7 @@ void Startup(GameStats& gameStats)
 void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& gameStats, Enemy enemyArray[])
 {
 	Enemy desiredAlien;	//Alien that shoots a bullet
-	Enemy spaceShip{ 0,0,(char)203,1,false,EnemyTypes::SpaceShip,true };
+	Enemy spaceShip{ 0,0,(char)203,1,false,false,EnemyTypes::SpaceShip,true };
 
 	const int actionArrayLength = 3;	//Number of 'actions' player can do
 	const int movementArrayLength = 2;	//Player's movement commands ammount
@@ -93,12 +93,15 @@ void GameLoop(PlayConfigs& playConfig, ScreenCoordinates scrnCoord, GameStats& g
 
 			if (gameStats.currIntervalPlayerBulletSpeed >= playConfig.IntervalPlayerBulletSpeed)
 			{
+				
 				BulletWork(bullet, alienBullet, playerCovers, { (short)player.x, (short)player.y }, scrnCoord, playConfig, gameStats, player, enemyArray);	//Make bullet work
 				gameStats.currIntervalPlayerBulletSpeed = 0;
+
 			}
 
 			if (gameStats.currIntervalMovement >= playConfig.intervalMovement)	//Enough time has passed for aliens to start continue moving
 			{
+				CheckParticles(playConfig, enemyArray);
 				if (!alienBullet.alive)	//There is not a bullet on screen
 				{
 					desiredAlien = AliensAttack(alienBullet, playConfig, enemyArray);	//Select an alien from alien pool
@@ -727,11 +730,11 @@ void BulletWork(Bullet& bullet, Bullet& alienBullet, Cover playerCovers[], COORD
 		}
 		else
 		{
-			if (bullet.goesUp)
+   			if (bullet.goesUp)
 			{
 				if (!bulletCrashedWithCover)
 				{
-					gotoxy(bullet.x, bullet.y);
+					gotoxy(bullet.x, bullet.y+1);
 					SetConsoleTextAttribute(hConsole, 0);
 					cout << ' ';
 					SetConsoleTextAttribute(hConsole, 7);
@@ -773,6 +776,21 @@ void BulletWork(Bullet& bullet, Bullet& alienBullet, Cover playerCovers[], COORD
 	}
 }
 
+void CheckParticles(PlayConfigs playConfig, Enemy enemyArray[])
+{
+	for (int i = 0; i <= playConfig.enemyAmountMax; i++)
+	{
+		if (enemyArray[i].exploded)
+		{
+			gotoxy(enemyArray[i].x, enemyArray[i].y);
+			SetConsoleTextAttribute(hConsole, 0);
+			cout << ' ';
+			SetConsoleTextAttribute(hConsole, 7);
+			enemyArray[i].exploded = false;
+		}
+	}
+}
+
 void BulletWithBulletColl(Bullet& bullet, Bullet& alienBullet)
 {
 	PlaySound(TEXT("invaderkilled.wav"), NULL, SND_ASYNC);
@@ -798,10 +816,9 @@ void HitAlien(Bullet& bullet, PlayConfigs& playConfig, GameStats& gameStats, Scr
 	}
 	PlaySound(TEXT("invaderkilled.wav"), NULL, SND_ASYNC);
 	gotoxy(enemyHit.x, enemyHit.y);
-	SetConsoleTextAttribute(hConsole, 0);
-	cout << ' ';
 	SetConsoleTextAttribute(hConsole, 7);
-
+	cout << (char)158;
+	enemyHit.exploded = true;
 	gameStats.playerScore += (int)enemyHit.alienType;
 	StatsWriter(scrnCoord, gameStats);
 }
